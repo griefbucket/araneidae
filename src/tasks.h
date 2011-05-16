@@ -19,6 +19,9 @@ Task *task_alloc(void(*)(Task*), void*);
 void task_free(Task*);
 void task_requeue(Task*);
 
+void task_ref(Task*);
+void task_unref(Task*);
+
 TaskQueue *taskqueue_alloc();
 void taskqueue_free(TaskQueue*);
 

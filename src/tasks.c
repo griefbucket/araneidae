@@ -23,6 +23,16 @@ void task_requeue(Task *t) {
 	taskqueue_enqueue(t->tq, t);
 }
 
+void task_ref(Task *t) {
+	t->refcount++;
+}
+
+void task_unref(Task *t) {
+	if (0 >= --t->refcount) {
+		task_free(t);
+	}
+}
+
 TaskQueue *taskqueue_alloc() {
 	TaskQueue *tq = malloc(sizeof(TaskQueue));
 	tq->queue = g_queue_new();
@@ -37,7 +47,7 @@ void taskqueue_free(TaskQueue *tq) {
 
 void taskqueue_enqueue(TaskQueue *tq, Task *t) {
 	t->tq = tq;
-	t->refcount++;
+	task_ref(t);
 
 	g_queue_push_tail(tq->queue, t);
 }
@@ -47,8 +57,6 @@ void taskqueue_run(TaskQueue *tq) {
 		Task *t = g_queue_pop_head(tq->queue);
 		t->func(t);
 
-		if (0 >= --t->refcount) {
-			task_free(t);
-		}
+		task_unref(t);
 	}
 }
