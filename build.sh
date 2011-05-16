@@ -1,2 +1,2 @@
 #!/bin/sh
-gcc src/*.c -o araneidae
+gcc -Wall -Werror $CFLAGS src/*.c -o araneidae
