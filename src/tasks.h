@@ -4,16 +4,20 @@
 #include <glib.h>
 
 typedef struct {
-	void(*func)(void*);
+	GQueue *queue;
+} TaskQueue;
+
+typedef struct TAG_Task{
+	TaskQueue *tq;
+	int refcount;
+
+	void(*func)(struct TAG_Task*);
 	void *data;
 } Task;
 
-Task *task_alloc(void(*)(void*), void*);
+Task *task_alloc(void(*)(Task*), void*);
 void task_free(Task*);
-
-typedef struct {
-	GQueue *queue;
-} TaskQueue;
+void task_requeue(Task*);
 
 TaskQueue *taskqueue_alloc();
 void taskqueue_free(TaskQueue*);
